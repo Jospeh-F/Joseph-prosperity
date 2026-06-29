@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prosperityland</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Style.css">
+  <link rel="shortcut icon" href="file_0000000072d071f4b5279eeeffde3b13.jpg" type="image/x-jpg">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>   
+</head>
+<body>
+
+<!-- SERVICE WORKER REGISTER -->
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+
+<!-- MIC MODAL -->
+<div class="modal hidden" id="mic-modal">
+  <div class="mbox">
+    <div class="micon">🎙️</div>
+    <div class="mtitle">Accès Microphone</div>
+    <p class="mtext">Famille Joseph a besoin de votre microphone. Cliquez ci-dessous puis autorisez dans la popup du navigateur.</p>
+    <button class="btn btn-gold btn-lg" onclick="requestMicAccess()">🎙️ Autoriser le microphone</button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal hidden" id="share-modal">
+  <div class="mbox">
+    <div class="micon">📤</div>
+    <div class="mtitle">Inviter des Membres</div>
+    <p class="mtext">Partagez ce code ou ce lien pour inviter la Famille Joseph.</p>
+    <div style="background:var(--navy2);border:1.5px dashed rgba(245,197,24,.4);border-radius:10px;padding:1rem;margin-bottom:1.5rem;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;color:var(--gold);letter-spacing:.22em;" id="share-code"></div>
+      <div style="font-size:.68rem;color:var(--muted);margin-top:.2rem;">Code de réunion</div>
+    </div>
+    <div class="mshare-btns">
+      <button class="mshare-btn sbtn-wa" onclick="shareWA();closeModal('share-modal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Partager sur WhatsApp
+      </button>
+      <button class="mshare-btn sbtn-fb" onclick="shareFB();closeModal('share-modal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Partager sur Facebook
+      </button>
+      <button class="mshare-btn sbtn-cp" style="border:1.5px solid rgba(245,197,24,.3);" onclick="copyLink();closeModal('share-modal')">
+        📋 Copier le lien d'invitation
+      </button>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="closeModal('share-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- VERSE PICKER MODAL -->
+<div class="modal hidden" id="verse-modal">
+  <div class="mbox">
+    <div class="micon">📖</div>
+    <div class="mtitle">Verset Biblique</div>
+    <p class="mtext">Choisissez un verset à partager dans le chat</p>
+    <div class="verse-list" id="verse-list"></div>
+    <button class="btn btn-outline btn-sm" onclick="closeModal('verse-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- SCHEDULE MODAL -->
+<div class="modal hidden" id="schedule-modal">
+  <div class="mbox">
+    <div class="micon">📅</div>
+    <div class="mtitle">Planifier une Réunion</div>
+    <p class="mtext">Créez une réunion programmée avec rappel automatique</p>
+    <div class="fg" style="max-width:100%;">
+      <label>Titre de la réunion</label>
+      <input type="text" id="sched-title" placeholder="Ex: Réunion Famille du Dimanche"/>
+    </div>
+    <div class="fg" style="max-width:100%;">
+      <label>Date</label>
+      <input type="date" id="sched-date"/>
+    </div>
+    <div class="fg" style="max-width:100%;">
+      <label>Heure</label>
+      <input type="time" id="sched-time"/>
+    </div>
+    <div class="fg" style="max-width:100%;">
+      <label>Lien permanent (optionnel)</label>
+      <input type="text" id="sched-slug" placeholder="Ex: reunion-hebdo" style="text-transform:lowercase;"/>
+    </div>
+    <div class="fg" style="max-width:100%;">
+      <label>Rappel</label>
+      <select id="sched-reminder">
+        <option value="5">5 minutes avant</option>
+        <option value="15" selected>15 minutes avant</option>
+        <option value="30">30 minutes avant</option>
+        <option value="60">1 heure avant</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-gold" onclick="saveSchedule()">✅ Planifier</button>
+      <button class="btn btn-outline" onclick="closeModal('schedule-modal')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROLE MODAL (host muting) -->
+<div class="modal hidden" id="role-modal">
+  <div class="mbox">
+    <div class="micon">👤</div>
+    <div class="mtitle" id="role-modal-name">Participant</div>
+    <p class="mtext">Actions disponibles en tant qu'Animateur</p>
+    <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.25rem;">
+      <button class="btn btn-danger" id="role-mute-btn" onclick="hostMutePeer()">🔇 Couper le micro</button>
+      <button class="btn btn-outline" onclick="closeModal('role-modal')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div>
+    <div class="nav-logo">FAMILLE JOSEPH</div>
+    <div class="nav-sub">La prosperité nous accompagne</div>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#planning">Agenda</a>
+    <a href="#app">Appel Audio</a>
+  </div>
+  <button class="btn btn-gold" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Rejoindre →</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-eyebrow">Impact Centre Chrétien — Brazzaville</p>
+  <div style="position:relative;margin-bottom:1.5rem;">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.14;pointer-events:none" viewBox="0 0 800 180">
+      <path d="M0 150 Q400 50 800 150" fill="none" stroke="#F5C518" stroke-width="1"/>
+      <path d="M0 170 Q400 70 800 170" fill="none" stroke="#F5C518" stroke-width=".5"/>
+      <line x1="240" y1="0" x2="240" y2="180" stroke="#F5C518" stroke-width=".5"/>
+      <line x1="400" y1="0" x2="400" y2="180" stroke="#F5C518" stroke-width=".5"/>
+      <line x1="560" y1="0" x2="560" y2="180" stroke="#F5C518" stroke-width=".5"/>
+      <circle cx="240" cy="110" r="65" fill="none" stroke="#F5C518" stroke-width=".5"/>
+    </svg>
+   <div class="logo-joseph"><img class="joseph" src="file_00000000a4e871f4888734734ed2f542.png" alt="logo"></div>
+  </div>
+  <p class="hero-tagline">Nous sommes des <em>visionnaires</em>, porteurs de provision et de sagesse, appelés à impacter notre génération par la <em>destinée divine</em>.</p>
+  <div class="hero-cta">
+    <button class="btn btn-gold btn-lg" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">🎙️ Créer un appel</button>
+    <button class="btn btn-outline btn-lg" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">🔗 Rejoindre un appel</button>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="sec-header">
+    <p class="sec-eyebrow">Pourquoi la Famille JOSEPH ?</p>
+    <h2 class="sec-title">Génèse 39:2<span>3 Jean 1:2</span></h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon">♾️</div><div class="feat-title">Illimité</div><p class="feat-desc">Aucune limite de participants</p></div>
+  
+    <div class="feat-card"><div class="feat-icon">📖</div><div class="feat-title">Versets Bibliques</div><p class="feat-desc">Partagez des versets directement dans le chat.</p></div>
+    <div class="feat-card"><div class="feat-icon">⏺️</div><div class="feat-title">Enregistrement</div><p class="feat-desc">Enregistrez la réunion et téléchargez-la après l'appel.</p></div>
+    <div class="feat-card"><div class="feat-icon">📤</div><div class="feat-title">Partage Facile</div><p class="feat-desc">Invitez directement sur WhatsApp ou Facebook en 1 clic.</p></div>
+  </div>
+</section>
+
+<!-- PLANNING SECTION -->
+<section id="planning">
+  <div class="sec-header">
+    <p class="sec-eyebrow">Organisation</p>
+    <h2 class="sec-title">Agenda des <span>Réunions</span></h2>
+  </div>
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <button class="btn btn-gold btn-lg" onclick="document.getElementById('schedule-modal').classList.remove('hidden')">
+      📅 Planifier une Réunion
+    </button>
+  </div>
+  <div class="plan-grid" id="plan-grid">
+    <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;font-size:.9rem;">
+      Aucune réunion planifiée. Créez-en une !
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="app">
+  <div class="sec-header">
+    <p class="sec-eyebrow">Application</p>
+    <h2 class="sec-title">Salle d'Appel <span>Audio</span></h2>
+  </div>
+  <div class="app-wrap">
+    <!-- Header -->
+    <div class="app-hdr">
+      <div class="app-hdr-title">FAMILLE JOSEPH</div>
+      <span class="badge badge-wait hidden" id="badge-wait">⏳ Connexion...</span>
+      <span class="badge badge-live hidden" id="badge-live"><span class="live-dot"></span> EN DIRECT</span>
+      <div class="rec-indicator" id="rec-indicator"><span class="rec-dot"></span> REC</div>
+      <span id="hdr-pcount" style="margin-left:auto;font-size:.8rem;color:var(--muted);display:none">
+        <span id="hdr-num">0</span> participant(s)
+      </span>
+    </div>
+    <!-- Status -->
+    <div class="status-bar">
+      <div class="sdot" id="sdot"></div>
+      <span id="stext">Entrez votre nom pour commencer</span>
+    </div>
+
+    <!-- ① NOM -->
+    <div class="panel active" id="p-name">
+      <h2>✝ Bienvenue</h2>
+      <p class="sub">Entrez votre nom et choisissez votre rôle</p>
+      <div class="fg">
+        <label>Prénom & Nom</label>
+        <input type="text" id="inp-name" placeholder="Ex: Leroy MOUSSAMA" maxlength="30"
+          onkeydown="if(event.key==='Enter')saveName()"/>
+      </div>
+      <div class="fg">
+        <label>Rôle</label>
+        <select id="inp-role">
+          <option value="member">👤 Membre</option>
+          <option value="guest">🙋 Invité</option>
+          <option value="host">👑 Animateur (créateur)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold btn-lg" onclick="saveName()">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ② LOBBY -->
+    <div class="panel" id="p-lobby">
+      <h2>Bonjour <span id="greet" style="color:var(--white)"></span> 👋</h2>
+      <p class="sub">Créez un appel ou rejoignez une réunion existante</p>
+      <div class="lobby-cards">
+        <div class="lcard" onclick="createRoom()">
+          <div class="lcard-icon">🎙️</div>
+          <div class="lcard-title">Créer un Appel</div>
+          <p class="lcard-desc">Démarrez et invitez les membres</p>
+        </div>
+        <div class="lcard" onclick="showPanel('p-join')">
+          <div class="lcard-icon">🔗</div>
+          <div class="lcard-title">Rejoindre</div>
+          <p class="lcard-desc">Entrez le code reçu</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ REJOINDRE -->
+    <div class="panel" id="p-join">
+      <h2>Rejoindre une Réunion</h2>
+      <p class="sub">Entrez le code reçu par WhatsApp ou Facebook</p>
+      <div class="code-wrap">
+        <input type="text" id="inp-code" placeholder="AB12CD" maxlength="6"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter')joinRoom()"/>
+        <button class="btn btn-gold btn-lg" onclick="joinRoom()">Rejoindre 🎙️</button>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-outline btn-sm" onclick="showPanel('p-lobby')">← Retour</button>
+      </div>
+    </div>
+
+    <!-- ④ ROOM -->
+    <div id="room-panel">
+      <div class="room-body">
+        <!-- Participants -->
+        <div class="room-main">
+          <h3>Participants (<span id="part-count">0</span>)</h3>
+          <div id="pgrid"><div class="empty-state"><div class="ei">🎙️</div><div>En attente...</div></div></div>
+        </div>
+        <!-- Sidebar -->
+        <div>
+          <div class="sb-sec">
+            <h4>Code de Réunion</h4>
+            <div class="code-box">
+              <div class="code-big" id="room-code-disp">------</div>
+              <div class="code-lbl">Partagez pour inviter</div>
+              <div class="share-btns">
+                <button class="sbtn sbtn-wa" onclick="shareWA()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  WhatsApp
+                </button>
+                <button class="sbtn sbtn-fb" onclick="shareFB()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Facebook
+                </button>
+                <button class="sbtn sbtn-cp" onclick="copyLink()">📋 Copier</button>
+              </div>
+            </div>
+          </div>
+          <div class="sb-sec">
+            <h4>Infos</h4>
+            <div class="info-card">
+              <div class="irow"><span class="lbl">Durée</span><span class="val gold" id="dur">00:00</span></div>
+              <div class="irow"><span class="lbl">Membres</span><span class="val" id="info-pcount">1</span></div>
+              <div class="irow"><span class="lbl">Mon rôle</span><span class="val gold" id="my-role-disp">Membre</span></div>
+              <div class="irow"><span class="lbl">Statut</span><span class="val" style="color:var(--success)">🟢 En direct</span></div>
+            </div>
+          </div>
+          <div class="sb-sec">
+            <h4>Messages</h4>
+            <div class="chat-box">
+              <div id="chat-msgs"></div>
+              <div class="reactions-bar">
+                <button class="react-btn" onclick="sendReaction('👏')" title="Applaudir">👏</button>
+                <button class="react-btn" onclick="sendReaction('🙏')" title="Prier">🙏</button>
+                <button class="react-btn" onclick="sendReaction('❤️')" title="Amour">❤️</button>
+                <button class="react-btn" onclick="sendReaction('🔥')" title="Feu">🔥</button>
+                <button class="react-btn" onclick="sendReaction('😂')" title="Rire">😂</button>
+                <button class="react-btn" onclick="sendReaction('🙌')" title="Louer">🙌</button>
+              </div>
+              <div class="chat-row">
+                <input type="text" id="chat-inp" placeholder="Votre message..." maxlength="200"
+                  onkeydown="if(event.key==='Enter')sendChat()"/>
+                <button class="verse-btn" onclick="openVersePicker()" title="Verset biblique">📖</button>
+                <button class="chat-send" onclick="sendChat()">➤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Controls -->
+      <div class="ctrl-bar">
+        <div class="cbtn" id="cbtn-mute" onclick="toggleMute()">
+          <span class="ci" id="ci-mute">🎙️</span>
+          <span class="cl" id="cl-mute">Couper micro</span>
+        </div>
+        <div class="cbtn" id="cbtn-spk" onclick="toggleSpeaker()">
+          <span class="ci">🔊</span><span class="cl">Haut-parleur</span>
+        </div>
+        <div class="cbtn" id="cbtn-hand" onclick="raiseHand()">
+          <span class="ci" id="ci-hand">✋</span><span class="cl">Lever la main</span>
+        </div>
+        <div class="cbtn" id="cbtn-rec" onclick="toggleRecording()">
+          <span class="ci" id="ci-rec">⏺️</span><span class="cl" id="cl-rec">Enregistrer</span>
+        </div>
+        <div class="cbtn" onclick="document.getElementById('share-modal').classList.remove('hidden')">
+          <span class="ci">📤</span><span class="cl">Inviter</span>
+        </div>
+        <div class="cbtn end-btn" onclick="leaveRoom()">
+          <span class="ci">📵</span><span class="cl">Quitter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><span class="gold">FAMILLE JOSEPH</span> · LA PROSPERITE NOUS ACCOMPAGNE</p>
+  <p style="margin-top:.4rem;">JOSEPH-FAM_KBD@2026 | Impact Centre Chrétien — Brazzaville</p>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script src="Script.js"></script>
+</body>
+</html>
