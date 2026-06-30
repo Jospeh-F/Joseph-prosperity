@@ -1,8 +1,8 @@
 {
-  "name": "Famille Joseph — Réunions Audio",
+  "name": "Famille Joseph",
   "short_name": "Famille Joseph",
   "description": "Réunions audio illimitées pour la Famille Joseph — Impact Centre Chrétien Brazzaville",
-  "start_url": "/",
+  "start_url": "/Joseph-prosperity/"
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#07102B",
@@ -24,15 +24,15 @@
   ],
   "categories": ["communication", "social"],
   "shortcuts": [
-    {
-      "name": "Créer un appel",
-      "short_name": "Créer",
-      "url": "/?action=create"
-    },
-    {
-      "name": "Rejoindre un appel",
-      "short_name": "Rejoindre",
-      "url": "/?action=join"
-    }
-  ]
+  {
+    "name": "Créer un appel",
+    "short_name": "Créer",
+    "url": "/Joseph-prosperity/?action=create"
+  },
+  {
+    "name": "Rejoindre un appel",
+    "short_name": "Rejoindre",
+    "url": "/Joseph-prosperity/?action=join"
+  }
+]
 }
