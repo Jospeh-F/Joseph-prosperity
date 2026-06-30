@@ -1,0 +1,38 @@
+{
+  "name": "Famille Joseph — Réunions Audio",
+  "short_name": "Famille Joseph",
+  "description": "Réunions audio illimitées pour la Famille Joseph — Impact Centre Chrétien Brazzaville",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07102B",
+  "theme_color": "#F5C518",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "file_00000000a4e871f4888734734ed2f542.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "file_00000000a4e871f4888734734ed2f542.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["communication", "social"],
+  "shortcuts": [
+    {
+      "name": "Créer un appel",
+      "short_name": "Créer",
+      "url": "/?action=create"
+    },
+    {
+      "name": "Rejoindre un appel",
+      "short_name": "Rejoindre",
+      "url": "/?action=join"
+    }
+  ]
+}
